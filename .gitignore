@@ -1,5 +1,7 @@
-﻿/bin
-/obj
+﻿bin/
+obj/
 npm-debug.log
 .DS_Store
-
+appsettings.json
+.vscode/
+.vs/
