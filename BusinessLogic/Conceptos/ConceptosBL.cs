@@ -19,9 +19,10 @@ namespace ConceptosService2.BusinessLogic.Conceptos
             _mapper = mapper ?? throw new System.ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<bool> AddConcepto(ConceptoDto concepto)
+        public async Task<int> AddConcepto(ConceptoDto concepto)
         {
-            throw new System.NotImplementedException();
+            int id = await InsertarConcepto(concepto.Codigo, concepto.Tipo, concepto.Descripcion);
+            return id;
         }
 
         public async Task<List<ConceptoDto>> GetAll(string type)
@@ -39,6 +40,7 @@ namespace ConceptosService2.BusinessLogic.Conceptos
 
 
         #region "Data Access Methods"
+
         private async Task<List<prcConceptos_Model>> CargarConceptos(string type)
         {
             List<prcConceptos_Model> conceptos;
@@ -53,6 +55,13 @@ namespace ConceptosService2.BusinessLogic.Conceptos
             }
 
             return conceptos;
+        }
+
+        private async Task<int> InsertarConcepto(string codigo, string tipo, string nombre)
+        {
+            int results = 0;
+            results = await _dbContext.Database.ExecuteSqlCommandAsync($"exec prctblConceptosGuardar @conCodigoViejo={""}, @conCodigo={codigo}, @conTipo={tipo}, @conNombre={nombre}, @conParametro=0, @conInactivo=0, @conOrden=0, @conAbreviado={""}, @conMascara={""}");
+            return results;
         }
 
         #endregion

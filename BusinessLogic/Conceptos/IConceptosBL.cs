@@ -8,7 +8,7 @@ namespace ConceptosService2.BusinessLogic.Conceptos
     {
         Task<List<ConceptoDto>> GetAll(string type);
         
-        Task<bool> AddConcepto(ConceptoDto concepto);
+        Task<int> AddConcepto(ConceptoDto concepto);
 
         Task<bool> UpdateConcepto(ConceptoDto concepto);
     }

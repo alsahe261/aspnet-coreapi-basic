@@ -1,5 +1,6 @@
 using ConceptosService2.BusinessLogic.Conceptos;
 using ConceptosService2.Domain;
+using ConceptosService2.Dto;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
@@ -17,7 +18,6 @@ namespace ConceptosService2.Controllers
             _conceptosBL = conceptosBL ?? throw new ArgumentNullException(nameof(conceptosBL));
         }
 
-
         [HttpGet("")]
         public async Task<IActionResult> GetAll([FromQuery] string type)
         {
@@ -26,6 +26,17 @@ namespace ConceptosService2.Controllers
             if (!conceptos.Any()) return NotFound();
 
             return Ok(conceptos);
-        }        
+        } 
+
+        [HttpPost("")]
+        public async Task<IActionResult> Post([FromBody] ConceptoDto concepto)
+        {
+            if (concepto == null)
+                return BadRequest();
+
+            int id = await _conceptosBL.AddConcepto(concepto);
+
+            return Ok(id);
+        }       
     }
 }
