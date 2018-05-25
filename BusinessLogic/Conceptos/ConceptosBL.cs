@@ -4,6 +4,8 @@ using ConceptosService2.Persistence;
 using ConceptosService2.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
 
 namespace ConceptosService2.BusinessLogic.Conceptos
@@ -21,7 +23,7 @@ namespace ConceptosService2.BusinessLogic.Conceptos
 
         public async Task<int> AddConcepto(ConceptoDto concepto)
         {
-            int id = await InsertarConcepto(concepto.Codigo, concepto.Tipo, concepto.Descripcion);
+            int id = await InsertarConcepto(concepto);
             return id;
         }
 
@@ -57,11 +59,32 @@ namespace ConceptosService2.BusinessLogic.Conceptos
             return conceptos;
         }
 
-        private async Task<int> InsertarConcepto(string codigo, string tipo, string nombre)
+        private async Task<int> InsertarConcepto(ConceptoDto concepto)
         {
-            int results = 0;
-            results = await _dbContext.Database.ExecuteSqlCommandAsync($"exec prctblConceptosGuardar @conCodigoViejo={""}, @conCodigo={codigo}, @conTipo={tipo}, @conNombre={nombre}, @conParametro=0, @conInactivo=0, @conOrden=0, @conAbreviado={""}, @conMascara={""}");
-            return results;
+            var resultParameter = new SqlParameter("@conNumero", SqlDbType.SmallInt) 
+            {
+                Direction = ParameterDirection.Output
+            };
+
+            var parameters = new SqlParameter[]
+            {
+                new SqlParameter("@conCodigoViejo", string.Empty),
+                new SqlParameter("@conCodigo", concepto.Codigo),
+                new SqlParameter("@conTipo", concepto.Tipo),
+                new SqlParameter("@conNombre", concepto.Descripcion),
+                new SqlParameter("@conParametro", "0"),
+                new SqlParameter("@conInactivo", "0"),
+                new SqlParameter("@conOrden", "0"),
+                new SqlParameter("@conAbreviado", string.Empty),
+                new SqlParameter("@conMascara", string.Empty),
+                new SqlParameter("@conObservacion", string.Empty),
+                resultParameter
+            };
+
+            await _dbContext.Database.ExecuteSqlCommandAsync($@"exec prctblConceptosGuardar_V2 @conCodigoViejo, @conCodigo, @conTipo, @conNombre, @conParametro, @conInactivo, @conOrden, @conAbreviado, @conMascara, @conObservacion, @conNumero OUTPUT", 
+                                                            parameters);
+                                
+            return int.Parse(resultParameter.Value.ToString());
         }
 
         #endregion

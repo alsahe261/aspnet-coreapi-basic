@@ -34,9 +34,9 @@ namespace ConceptosService2.Controllers
             if (concepto == null)
                 return BadRequest();
 
-            int id = await _conceptosBL.AddConcepto(concepto);
+            concepto.Numero = await _conceptosBL.AddConcepto(concepto);
 
-            return Ok(id);
+            return Created("GetById", concepto);
         }       
     }
 }
